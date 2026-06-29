@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>管理后台 - 家教匹配系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            height: 56px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+        }
+
+        .navbar .brand {
+            font-size: 18px;
+            font-weight: 700;
+            margin-right: 32px;
+        }
+
+        .navbar a {
+            color: rgba(255, 255, 255, .8);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8eaf6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tabs .tab {
+            padding: 9px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: #666;
+            transition: all .15s;
+        }
+
+        .tabs .tab:hover {
+            color: #3949ab;
+        }
+
+        .tabs .tab.active {
+            color: #3949ab;
+            font-weight: 600;
+            border-bottom-color: #3949ab;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px;
+            background: #e8eaf6;
+            color: #283593;
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 400;
+        }
+
+        .badge-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .badge-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-rejected {
+            background: #fbe9e7;
+            color: #c62828;
+        }
+
+        .btn {
+            padding: 7px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: opacity .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-success {
+            background: #43a047;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            opacity: .9;
+        }
+
+        .btn-danger {
+            background: #e53935;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            opacity: .9;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 0;
+            font-size: 14px;
+        }
+
+        .empty-state i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: .3;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .4);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .modal-header .close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #999;
+            padding: 0 4px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            min-height: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="brand">📚 家教匹配系统</div><a href="/index.html">首页</a><a href="/admin.html"
+            style="font-weight:700;background:rgba(255,255,255,.18);">管理后台</a>
+    </nav>
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('pending')">待审核</div>
+            <div class="tab" onclick="switchTab('all')">全部记录</div>
+        </div>
+        <div class="tab-content active" id="tab-pending">
+            <div class="card">
+                <div class="card-header">待审核信息</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>发布者</th>
+                                <th>科目</th>
+                                <th>年级</th>
+                                <th>地区</th>
+                                <th>时间</th>
+                                <th>报酬</th>
+                                <th>提交时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="pendingEmpty" style="display:none"><i>✅</i>暂无待审核信息</div>
+            </div>
+        </div>
+        <div class="tab-content" id="tab-all">
+            <div class="card">
+                <div class="card-header">全部记录</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>发布者</th>
+                                <th>科目</th>
+                                <th>年级</th>
+                                <th>状态</th>
+                                <th>提交时间</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="allEmpty" style="display:none"><i>📭</i>暂无记录</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="auditModal">
+        <div class="modal">
+            <div class="modal-header"><span>审核操作</span><span class="close" onclick="closeModal()">&times;</span></div>
+            <div class="modal-body">
+                <div id="auditInfo" style="margin-bottom:12px;font-size:14px;line-height:1.8;"></div>
+                <div class="form-group"><label>审核意见</label><textarea id="auditComment" placeholder="可填写批注意见"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-danger btn-sm"
+                    onclick="doAudit('reject')">拒绝</button><button class="btn btn-success btn-sm"
+                    onclick="doAudit('approve')">通过</button></div>
+        </div>
+    </div>
+
+    <script>
+        let auditTarget = {};
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+        function fmtTS(slots) { if (!slots || !slots.length) return '—'; const g = {}, d = ['一', '二', '三', '四', '五', '六', '日'], p = ['上午', '下午', '晚上']; slots.forEach(s => { const [di, pi] = s.split('-').map(Number); const k = '周' + (d[di] || ''); if (!g[k]) g[k] = []; g[k].push(p[pi] || ''); }); return Object.entries(g).map(([k, v]) => k + '(' + v.join('/') + ')').join('; '); }
+
+        (async () => { try { const r = await fetch('/api/auth/me'); const d = await r.json(); if (!d.ok || d.user.role !== 'admin') { location.href = '/login.html'; return; } } catch (e) { location.href = '/login.html'; } loadPending(); loadAll(); })();
+
+        async function loadPending() { try { const r = await fetch('/api/admin/pending'); const d = await r.json(); const tbody = document.getElementById('pendingBody'); tbody.innerHTML = ''; const empty = document.getElementById('pendingEmpty'); if (!d.ok || !d.data.length) { empty.style.display = 'block'; return; } empty.style.display = 'none'; d.data.forEach(l => { const tr = document.createElement('tr'); tr.innerHTML = '<td><span class="tag">' + (l._type === 'student' ? '学生' : '家长') + '</span></td><td>' + esc(l.publisher) + '</td><td>' + l.subjects.join(', ') + '</td><td>' + l.grades.join(', ') + '</td><td>' + (l._type === 'student' ? l.districts.join(', ') : esc(l.district || '')) + '</td><td style="font-size:12px">' + fmtTS(l.timeSlots) + '</td><td>' + (l._type === 'parent' ? '¥' + l.pay + '/时' : '—') + '</td><td>' + l.createdAt + '</td><td><button class="btn btn-success btn-sm" onclick="openAudit(\'' + l._type + '\',' + l.id + ')">审核</button></td>'; tbody.appendChild(tr); }); } catch (e) { } }
+
+        async function loadAll() { try { const r = await fetch('/api/admin/all'); const d = await r.json(); const tbody = document.getElementById('allBody'); tbody.innerHTML = ''; const empty = document.getElementById('allEmpty'); if (!d.ok || !d.data.length) { empty.style.display = 'block'; return; } empty.style.display = 'none'; d.data.slice(0, 100).forEach(l => { const tr = document.createElement('tr'); tr.innerHTML = '<td><span class="tag">' + (l._type === 'student' ? '学生' : '家长') + '</span></td><td>' + esc(l.publisher) + '</td><td>' + l.subjects.join(', ') + '</td><td>' + l.grades.join(', ') + '</td><td><span class="badge badge-' + l.status + '">' + (l.status === 'pending' ? '待审核' : l.status === 'approved' ? '已通过' : '已拒绝') + '</span></td><td>' + l.createdAt + '</td>'; tbody.appendChild(tr); }); } catch (e) { } }
+
+        function openAudit(type, id) { auditTarget = { type, id }; const info = document.getElementById('auditInfo'); info.innerHTML = '<p><strong>类型：</strong>' + (type === 'student' ? '学生家教' : '家长需求') + '</p>'; document.getElementById('auditComment').value = ''; document.getElementById('auditModal').classList.add('show'); }
+
+        async function doAudit(action) { const comment = document.getElementById('auditComment').value.trim(); try { const r = await fetch('/api/admin/audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: auditTarget.type, id: auditTarget.id, action, comment }) }); const d = await r.json(); if (d.ok) { alert(action === 'approve' ? '已通过审核' : '已拒绝'); document.getElementById('auditModal').classList.remove('show'); loadPending(); loadAll(); } else alert(d.msg); } catch (e) { alert('网络错误'); } }
+
+        function switchTab(t) { document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active')); document.querySelector('.tabs .tab:nth-child(' + (t === 'pending' ? 1 : 2) + ')').classList.add('active'); document.getElementById('tab-' + t).classList.add('active'); }
+        function closeModal() { document.getElementById('auditModal').classList.remove('show'); }
+        document.getElementById('auditModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('show'); });
+    </script>
+</body>
+
+</html>

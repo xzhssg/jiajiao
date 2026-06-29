@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>公开查询 - 家教匹配系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            height: 56px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+        }
+
+        .navbar .brand {
+            font-size: 18px;
+            font-weight: 700;
+            margin-right: 32px;
+        }
+
+        .navbar a {
+            color: rgba(255, 255, 255, .8);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tabs .tab {
+            padding: 9px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: #666;
+            transition: all .15s;
+        }
+
+        .tabs .tab:hover {
+            color: #3949ab;
+        }
+
+        .tabs .tab.active {
+            color: #3949ab;
+            font-weight: 600;
+            border-bottom-color: #3949ab;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: end;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: #3949ab;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px;
+            background: #e8eaf6;
+            color: #283593;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+
+        .btn-primary {
+            background: #3949ab;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 0;
+            font-size: 14px;
+        }
+
+        .empty-state i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: .3;
+        }
+
+        @media(max-width:640px) {
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="brand">📚 家教匹配系统</div><a href="./index.html">首页</a><a href="./query.html"
+            style="font-weight:700;background:rgba(255,255,255,.18);">公开查询</a><a href="./stats.html">数据统计</a>
+    </nav>
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('tutors')">查学生（家教）</div>
+            <div class="tab" onclick="switchTab('needs')">查家长（需求）</div>
+        </div>
+
+        <div class="tab-content active" id="tab-tutors">
+            <div class="card">
+                <div class="card-header">查询已审核的家教信息</div>
+                <div class="filter-row">
+                    <div class="form-group"><label>科目</label><select id="sSubject" onchange="searchTutors()">
+                            <option value="">全部</option>
+                        </select></div>
+                    <div class="form-group"><label>年级</label><select id="sGrade" onchange="searchTutors()">
+                            <option value="">全部</option>
+                        </select></div>
+                    <div></div><button class="btn btn-primary" onclick="searchTutors()">🔍 查询</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>科目</th>
+                                <th>年级</th>
+                                <th>地区</th>
+                                <th>空闲时间</th>
+                                <th>发布者</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tutorBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="tutorEmpty" style="display:none"><i>📭</i>暂无匹配结果</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-needs">
+            <div class="card">
+                <div class="card-header">查询已审核的需求信息</div>
+                <div class="filter-row">
+                    <div class="form-group"><label>科目</label><select id="nSubject" onchange="searchNeeds()">
+                            <option value="">全部</option>
+                        </select></div>
+                    <div class="form-group"><label>年级</label><select id="nGrade" onchange="searchNeeds()">
+                            <option value="">全部</option>
+                        </select></div>
+                    <div class="form-group"><label>报酬上限</label><input type="number" id="nPay" placeholder="金额"
+                            oninput="searchNeeds()"></div>
+                    <button class="btn btn-primary" onclick="searchNeeds()">🔍 查询</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>科目</th>
+                                <th>年级</th>
+                                <th>期望时间</th>
+                                <th>报酬</th>
+                                <th>地区</th>
+                                <th>发布者</th>
+                            </tr>
+                        </thead>
+                        <tbody id="needBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="needEmpty" style="display:none"><i>📭</i>暂无匹配结果</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const CS = ['语文', '数学', '英语', '物理', '化学'], CG = ['小学', '初中', '高中'];
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+        function fmtTS(slots) { if (!slots || !slots.length) return '未设置'; const g = {}, d = ['一', '二', '三', '四', '五', '六', '日'], p = ['上午', '下午', '晚上']; slots.forEach(s => { const [di, pi] = s.split('-').map(Number); const k = '周' + d[di]; if (!g[k]) g[k] = []; g[k].push(p[pi]); }); return Object.entries(g).map(([k, v]) => k + '(' + v.join('/') + ')').join('; '); }
+        CS.forEach(s => { document.querySelectorAll('.tab-content select[id$="Subject"]').forEach(el => { const o = document.createElement('option'); o.value = s; o.textContent = s; el.appendChild(o); }) });
+        CG.forEach(g => { document.querySelectorAll('.tab-content select[id$="Grade"]').forEach(el => { const o = document.createElement('option'); o.value = g; o.textContent = g; el.appendChild(o); }) });
+        searchTutors(); searchNeeds();
+        async function searchTutors() { const sub = document.getElementById('sSubject').value; const grade = document.getElementById('sGrade').value; try { const r = await fetch('/api/public/tutors?' + new URLSearchParams({ subject: sub, grade }).toString()); const d = await r.json(); const tbody = document.getElementById('tutorBody'); tbody.innerHTML = ''; document.getElementById('tutorEmpty').style.display = d.data.length ? 'none' : 'block'; d.data.forEach(l => { const tr = document.createElement('tr'); tr.innerHTML = '<td>' + l.subjects.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</td><td>' + l.grades.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</td><td>' + l.districts.join(', ') + '</td><td style="font-size:12px">' + fmtTS(l.timeSlots) + '</td><td>' + esc(l.publisher) + '</td>'; tbody.appendChild(tr); }); } catch (e) { } }
+        async function searchNeeds() { const sub = document.getElementById('nSubject').value; const grade = document.getElementById('nGrade').value; const pay = document.getElementById('nPay').value; const params = { subject: sub, grade }; if (pay) params.maxPay = pay; try { const r = await fetch('/api/public/needs?' + new URLSearchParams(params).toString()); const d = await r.json(); const tbody = document.getElementById('needBody'); tbody.innerHTML = ''; document.getElementById('needEmpty').style.display = d.data.length ? 'none' : 'block'; d.data.forEach(l => { const tr = document.createElement('tr'); tr.innerHTML = '<td>' + l.subjects.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</td><td>' + l.grades.map(s => '<span class="tag">' + esc(s) + '</span>').join('') + '</td><td style="font-size:12px">' + fmtTS(l.timeSlots) + '</td><td><strong>¥' + l.pay + '</strong>/时</td><td>' + esc(l.district) + '</td><td>' + esc(l.publisher) + '</td>'; tbody.appendChild(tr); }); } catch (e) { } }
+        function switchTab(t) { document.querySelectorAll('.tabs .tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active')); document.querySelector('.tabs .tab:nth-child(' + (t === 'tutors' ? 1 : 2) + ')').classList.add('active'); document.getElementById('tab-' + t).classList.add('active'); if (t === 'tutors') searchTutors(); else searchNeeds(); }
+    </script>
+</body>
+
+</html>

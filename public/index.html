@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>首页 - 家教匹配系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            height: 56px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+        }
+
+        .navbar .brand {
+            font-size: 18px;
+            font-weight: 700;
+            margin-right: 32px;
+        }
+
+        .navbar .nav {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .navbar .nav a {
+            color: rgba(255, 255, 255, .8);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background .15s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .navbar .nav a:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .navbar .user {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: #fff;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            opacity: .85;
+            font-size: 15px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+        }
+
+        .stat-card .num {
+            font-size: 30px;
+            font-weight: 700;
+            color: #3949ab;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+        .quick-links {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+        }
+
+        .quick-links h3 {
+            font-size: 16px;
+            margin-bottom: 14px;
+        }
+
+        .quick-links .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 22px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity .2s;
+        }
+
+        .btn-primary {
+            background: #3949ab;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #3949ab;
+            color: #3949ab;
+        }
+
+        .btn-outline:hover {
+            background: #e8eaf6;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="brand">📚 家教匹配系统</div>
+        <div class="nav" id="navLinks"><a href="./index.html">首页</a><a href="./query.html">公开查询</a><a
+                href="./stats.html">数据统计</a><a href="./login.html" id="navLogin">登录</a><a href="./register.html"
+                id="navRegister">注册</a><a href="./student.html" id="navStudent" style="display:none">学生端</a><a
+                href="./parent.html" id="navParent" style="display:none">家长端</a><a href="./admin.html" id="navAdmin"
+                style="display:none">管理后台</a></div>
+        <div class="user" id="userInfo"><span>未登录</span></div>
+    </nav>
+    <div class="container">
+        <div class="hero">
+            <h1>家教信息管理与匹配系统</h1>
+            <p>连接优秀家教与有需求的家庭 · 安全 · 高效 · 可信</p>
+        </div>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="num" id="hStudent">0</div>
+                <div class="label">已注册学生</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="hParent">0</div>
+                <div class="label">已注册家长</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="hPending">0</div>
+                <div class="label">待审核信息</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="hApproved">0</div>
+                <div class="label">已审核通过</div>
+            </div>
+        </div>
+        <div class="quick-links">
+            <h3>快速入口</h3>
+            <div class="links"><a href="./query.html" class="btn btn-primary">🔍 查询家教/需求</a><a href="./register.html"
+                    class="btn btn-primary">📝 注册账号</a><a href="./stats.html" class="btn btn-primary">📊 查看统计</a></div>
+        </div>
+    </div>
+    <script>
+        async function loadStats() { try { const r = await fetch('/api/home/stats'); const d = await r.json(); if (d.ok) { document.getElementById('hStudent').textContent = d.data.studentCount; document.getElementById('hParent').textContent = d.data.parentCount; document.getElementById('hPending').textContent = d.data.pendingCount; document.getElementById('hApproved').textContent = d.data.approvedCount; } } catch (e) { } }
+        async function checkAuth() { try { const r = await fetch('/api/auth/me'); const d = await r.json(); if (d.ok) { const u = d.user; const info = document.getElementById('userInfo'); info.innerHTML = `<span>👤 ${u.nickname}</span><a href="./login.html" onclick="event.preventDefault();fetch('/api/auth/logout',{method:'POST'}).then(()=>location.href='./index.html')" style="color:rgba(255,255,255,.8);font-size:13px;text-decoration:none;padding:4px 10px;background:rgba(255,255,255,.15);border-radius:4px;">退出</a>`; if (u.role === 'student') document.getElementById('navStudent').style.display = ''; if (u.role === 'parent') document.getElementById('navParent').style.display = ''; if (u.role === 'admin') document.getElementById('navAdmin').style.display = ''; } else { document.getElementById('navLogin').style.display = ''; document.getElementById('navRegister').style.display = ''; } } catch (e) { document.getElementById('navLogin').style.display = ''; document.getElementById('navRegister').style.display = ''; } }
+        loadStats(); checkAuth();
+    </script>
+</body>
+
+</html>

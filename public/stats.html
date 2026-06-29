@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>数据统计 - 家教匹配系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #1a237e, #3949ab);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 56px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+    }
+
+    .navbar .brand {
+      font-size: 18px;
+      font-weight: 700;
+      margin-right: 32px;
+    }
+
+    .navbar a {
+      color: rgba(255, 255, 255, .8);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 6px;
+    }
+
+    .navbar a:hover {
+      background: rgba(255, 255, 255, .18);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e8eaf6;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .stat-row .label {
+      font-size: 14px;
+      width: 100px;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .stat-row .bar-wrap {
+      flex: 1;
+      background: #eee;
+      border-radius: 6px;
+      height: 24px;
+      overflow: hidden;
+    }
+
+    .stat-row .bar {
+      height: 24px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #3949ab, #5c6bc0);
+      transition: width .4s;
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .stat-row .count {
+      font-size: 14px;
+      color: #555;
+      width: 40px;
+      text-align: right;
+    }
+
+    .note {
+      color: #999;
+      font-size: 13px;
+      padding: 20px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="brand">📚 家教匹配系统</div><a href="./index.html">首页</a><a href="./query.html">公开查询</a><a href="./stats.html"
+      style="font-weight:700;background:rgba(255,255,255,.18);">数据统计</a>
+  </nav>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">📊 需求端统计（按家长需求）</div>
+      <div id="demandStats"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">📊 供给端统计（按学生供给）</div>
+      <div id="supplyStats"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">📊 时间维度统计</div>
+      <div id="timeStats"></div>
+    </div>
+  </div>
+  <script>
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function renderBar(title, data, unit = '个') {
+      const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
+      if (!entries.length || entries.every(([, v]) => v === 0)) return '<div class="note">暂无数据</div>';
+      const max = entries[0][1];
+      let html = '';
+      entries.forEach(([k, v]) => {
+        const pct = max > 0 ? (v / max * 100) : 0;
+        html += '<div class="stat-row"><span class="label">' + esc(k) + '</span><div class="bar-wrap"><div class="bar" style="width:' + pct + '%">' + (pct > 15 ? v + ' ' + unit : '') + '</div></div><span class="count">' + v + '</span></div>';
+      });
+      return html;
+    }
+    (async function () { try { const r = await fetch('/api/statistics'); const d = await r.json(); if (!d.ok) { document.getElementById('demandStats').innerHTML = '<div class="note">加载失败</div>'; return; const s = d.data; document.getElementById('demandStats').innerHTML = renderBar('热门科目（需求）', s.demand.subjects) + renderBar('热门年级（需求）', s.demand.grades); document.getElementById('supplyStats').innerHTML = renderBar('热门科目（供给）', s.supply.subjects) + renderBar('热门年级（供给）', s.supply.grades); document.getElementById('timeStats').innerHTML = renderBar('热门授课时间段', s.demand.periods); } } catch (e) { document.getElementById('demandStats').innerHTML = '<div class="note">加载失败</div>'; } })();
+  </script>
+</body>
+
+</html>
